@@ -1,0 +1,19 @@
+supabase_url: X
+supabase_key: X
+consumer_key: X
+consumer_secret: X
+access_token: X
+access_token_secret: X
+medias:
+  - https://elpais.com/gente
+  - https://elpais.com/noticias/famosos
+  - https://elpais.com/noticias/moda
+  - https://www.elmundo.es/television.html
+  - https://as.com/actualidad
+  - https://www.lavanguardia.com/gente
+  - https://www.lavanguardia.com/sucesos
+  - https://www.mundodeportivo.com/elotromundo/television
+  - https://www.elespanol.com
+hashtags:
+  - noticias
+  - igualitario
