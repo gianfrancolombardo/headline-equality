@@ -56,14 +56,20 @@ def create_texts(news):
     return texts
 
 def publish(news, tweet_texts):
-
     main_tweet = x_bot.tweet(tweet_texts['base'])
+    last_tweet_id = main_tweet.data['id']
+
     if 'secondary' in tweet_texts:
-        x_bot.add_comment(main_tweet.data['id'], tweet_texts['secondary'])
-    if 'reason' in tweet_texts:
-        x_bot.add_comment(main_tweet.data['id'], tweet_texts['reason'])
+        secondary_comment = x_bot.add_comment(last_tweet_id, tweet_texts['secondary'])
+        last_tweet_id = secondary_comment.data['id']
     
-    x_bot.add_comment(main_tweet.data['id'], tweet_texts['url'])
+    if 'reason' in tweet_texts:
+        reason_comment = x_bot.add_comment(last_tweet_id, tweet_texts['reason'])
+        last_tweet_id = reason_comment.data['id']
+    
+    if 'url' in tweet_texts:
+        url_comment = x_bot.add_comment(last_tweet_id, tweet_texts['url'])
+        last_tweet_id = url_comment.data['id']
 
     news['post_id'] = main_tweet.data['id']
     news['published'] = datetime.datetime.now().isoformat()
@@ -71,6 +77,7 @@ def publish(news, tweet_texts):
 
     st.toast(f"Headline #{news['id']} published", icon="✅")
     st.rerun()
+
 
 data_news = (
     db.table(Tables.NEWS)

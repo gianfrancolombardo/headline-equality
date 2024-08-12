@@ -13,9 +13,12 @@ if 'db' not in st.session_state:
 db = st.session_state.db.client
 if 'manager' in st.session_state:
     manager = st.session_state.manager
+if 'config' in st.session_state:
+    config = st.session_state.config
 
 analyzer_openia = HeadlineAnalyzer(
     temperature=0.2,
+    api_key=config.get('openai_key'),
     base_url="https://api.openai.com/v1/",
     model="gpt-4o-mini"
 )
