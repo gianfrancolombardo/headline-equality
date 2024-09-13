@@ -13,7 +13,16 @@ def initialize():
     config = Config('./config.yaml')
     db = SupabaseDB(config.get('supabase_url'), config.get('supabase_key'))
     manager = HeadlineManager(db)
-    analyzer = HeadlineAnalyzer()
+    
+    analyzer = HeadlineAnalyzer(
+        api_key=config.get('openai_key'),
+        base_url="https://api.openai.com/v1/",
+        model="gpt-4o-mini"
+    )
+    # analyzer = HeadlineAnalyzer(
+    #     model="gemma2-9b"
+    # )
+
     return config, db, manager, analyzer
 
 def main():

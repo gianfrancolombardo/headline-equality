@@ -44,6 +44,19 @@ class HeadlineMain:
                             "execution_time": end_time - start_time,
                             "validated": None
                         }
+
+                        if result.get('is_misogynistic'):
+                            
+                            #print("Is misogynistic. go to auto validation...")
+                            context = scraper.get_context(new['url'])
+
+                            auto_validation_result = self.analyzer.validate(headline=new['headline'], is_misogynistic=True, reason=new['reason'], context=context)
+                            if auto_validation_result is not None:
+                                new['validated_auto'] = auto_validation_result.get('is_correct', None)
+                                new['validated_auto_reason'] = auto_validation_result.get('reason', None)
+
+                                #print(f'Auto validation: {new["is_misogynistic"]} -> {auto_validation_result}')
+
                         headlines_result.append(new)
                         self.manager.save(new)
         

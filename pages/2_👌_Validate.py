@@ -47,9 +47,11 @@ def regenerate_headline(news, analyzer, tone):
 
 @st.experimental_dialog("Edit headline generated")
 def edit_headline(news):
-    edited = st.text_area("Headline refactored", news['refactored_es'], height=200)
+    refactored_edited = st.text_area("Headline refactored", news['refactored_es'], height=150)
+    reason_edited = st.text_area("Reason", news['reason'], height=150)
     if st.button("Save"):
-        news['refactored_es'] = edited
+        news['refactored_es'] = refactored_edited
+        news['reason'] = reason_edited
         
         manager.save(news)
         st.rerun()
@@ -67,30 +69,33 @@ data_news = (
 
 st.title(f"👌 Validate headlines ({len(data_news.data)})")
 
-for news in data_news.data[:5]:
+for news in data_news.data[:2]:
     with st.form(key=f"validate_{news['id']}"):
     
         st.subheader(news['headline'])
 
         col1, col2 = st.columns(2)
         with col1:
-            st.write("Refactored")
-            st.write(news['refactored_es'])
+            st.write(f"**Refactored**  \n{news['refactored_es']}")
         with col2:
-            st.write("Refactored EN")
-            st.write(news['refactored'])
+            st.write(f"**Refactored EN**  \n{news['refactored']}")
 
         col3, col4 = st.columns(2)
         with col3:
-            st.write("Reason")
-            st.write(news['reason'])
+            st.write(f"**Reason**  \n{news['reason']}")
         with col4:
+            st.write(f"🆔 {news['id']}")
             st.write(f"📢 [{news['source']}]({news['url']})")
             st.write(f"📅 {news['created_at'].split('T')[0]}")
 
-        
+        col9, col10 = st.columns(2)
+        with col9:
+            st.write(f"**Auto validation**")
+            st.write("🟢 Valid" if news['validated_auto'] else "🔴 No valid")
+        with col10:
+            st.write(f"**Auto validation reason**  \n{news['validated_auto_reason']}")
 
-        col5, col6, col7, col8 = st.columns([2, 1, 1, 1], vertical_alignment="bottom")
+        col5, col6, col7, col8 = st.columns([3, 1, 1, 1], vertical_alignment="bottom")
         with col5:
             tone = st.selectbox(
                 "Select tone",
@@ -110,7 +115,7 @@ for news in data_news.data[:5]:
         with col7:
             regenerate_button_local = st.form_submit_button("🔄 Local", use_container_width=True)
         with col8:
-            edit_button = st.form_submit_button("Edit", use_container_width=True)
+            edit_button = st.form_submit_button("✏️ Edit", use_container_width=True)
         
         if regenerate_button_web:
             news = regenerate_headline(news, analyzer_openia, tone)

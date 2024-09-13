@@ -9,6 +9,7 @@ The system is built using Python and Streamlit for interactive visualization. It
 ## Features
 
 - **Headline Analysis**: Detects and classifies gender bias, sexism, and misogyny in news headlines.
+- **Self-Validation System**: Incorporates a adversarial language models (LLMs) discuss and challenge the categorization of bias, ensuring more accurate and reliable results.
 - **Headline Validation**: Offers the possibility to validate headline wording and suggest rewrites in different tones.
 - **Headline Publication on X**: Allows publishing of validated headlines on X.com (formerly Twitter).
 - **Interactive Visualization**: Dashboard to explore analysis results in a visual and interactive manner.
@@ -19,6 +20,19 @@ The system is built using Python and Streamlit for interactive visualization. It
 - **Visualization Framework**: Streamlit
 - **AI Framework**: LangChain
 - **AI Models**: GEMMA2 9B, LLaMA3.1 7B, GPT-4o-mini
+
+## Used
+
+```
+# Interactive mode
+streamlit run Home.py
+```
+
+```
+# Only analyzer script
+python analyzer.py
+```
+
 
 ## Contributing
 

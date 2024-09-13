@@ -7,6 +7,7 @@ from scripts.headline_analyzer import HeadlineAnalyzer
 from scripts.headline_manager import Tables
 from scripts.twitterbot import TwitterBot
 from scripts.webscraper import WebScraper
+from scripts.sources import Sources
 
 
 if 'db' not in st.session_state:
@@ -24,9 +25,12 @@ x_bot = TwitterBot(
     st.session_state.config.get('access_token_secret')
 )
 
+sources = Sources()
+
 def create_texts(news):
     max_chars = 270 
-    base = f"""#{news['id']}\n🔴 {news['headline']}\n\n🟢 {news['refactored_es']}"""
+    # base = f"""#{news['id']}\n🔴 {news['headline']}\n\n🟢 {news['refactored_es']}"""
+    base = f"""🔴 {news['headline']}\n\n🟢 {news['refactored_es']}"""
 
     texts = {
         'base': base,
@@ -41,9 +45,12 @@ def create_texts(news):
         texts['reason'] = f"🧠 {news['reason']}"
 
     texts['url'] = f"\n📰 {news['url']}"
+
+    source_username = sources.get_username(news['source'])
+    texts['base'] += f"\n{source_username}" if source_username else ""
     
     if len(hashtags) > 0:
-        hashtags_text = "\n"
+        hashtags_text = "" if source_username else "\n"
         for tag in hashtags:
             if len(texts['base']) + len(hashtags_text) + len(tag) + 1 <= (max_chars - 2):
                 hashtags_text += f" #{tag}"
@@ -93,22 +100,22 @@ data_news = (
 st.title(f"🚀 Publish on X ({len(data_news.data)})")
 
 
-for news in data_news.data:
+for news in data_news.data[:2]:
     with st.form(key=f"publish_{news['id']}"):
+        tweet_texts = create_texts(news)
+
         st.subheader(f"#{news['id']}")
 
         col1, col2 = st.columns(2)
         with col1:
-            st.write(f"{news['headline']}")
+            st.write(f"**Original:**  \n{news['headline']}")
+
+            st.write("Simple tweet:", "🟢" if tweet_texts['simple'] else "🔴", len(tweet_texts['base'])) 
+            st.write(f"📢 [{news['source']}]({news['url']})")
         with col2:
-            st.write(f"**{news['refactored_es']}**")
+            st.write(f"**Refactored:**  \n{news['refactored_es']}")
+            st.write(f"**Reason:**  \n{news['reason']}")
 
-        st.write(f"{news['url']}")
-
-        tweet_texts = create_texts(news)
-        
-        st.write("Simple:", "🟢" if tweet_texts['simple'] else "🔴", len(tweet_texts['base'])) 
-        
         st.divider()
 
         submit_button = st.form_submit_button("Publish", use_container_width=True)

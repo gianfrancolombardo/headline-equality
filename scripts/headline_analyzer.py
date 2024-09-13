@@ -25,44 +25,6 @@ class HeadlineAnalyzer:
             ,callbacks=[handler]
         )
         self.prompts = {
-            # "system": """
-            #     You are a highly intelligent and advanced language model designed to classify news headlines. 
-            #     Your goal is to evaluate and categorize news headlines as "misogynistic/sexist" or "neutral" from a radical feminist perspective, considering both the context and the implications of the language used. 
-            #     You understand the nuances and subtleties of language and are well-versed in feminist theory and gender studies. 
-            #     Your classifications should reflect a thorough and precise understanding of how language can perpetuate or challenge sexism and misogyny.
-            #     Furthermore, you're an expert in crafting social media content with sarcasm and irony, always from a radical feminist perspective and tailored for a female audience.
-            #     Avoid using double quotes (\") in your responses to prevent possible errors with the JSON format.
-            # """,
-            # "prompt_1": """
-            #     Classify the following news headline into one of two categories: "misogynistic/sexist" or "neutral." Your evaluation should be based on a radical feminist perspective and a precise and careful interpretation of what constitutes misogyny and sexism. Provide a brief explanation for your classification.
-            #     If the headline is in Spanish, first translate to English and then classify.
-            #     At the end add a JSON object with keys:
-            #     - is_misogynistic: boolean.
-            #     - refactored: refactor the headline from a radical feminist perspective with sarcasm and irony focused on the creation of content for social networks making it evident why it is a misogynistic/sexist headline (only if is_misogynistic is true).
-            #     - refactored_es: value of the new_headline key translated into Spanish (only if is_misogynistic is true).
-            
-            #     Headline: {headline}
-            # """,
-            # "system_content": """
-            #     You are an exceptional content creator known for crafting viral content in a sarcastic, funny, and ironic tone, always from a radical feminist perspective and tailored for a female audience. 
-            #     Your task is to take headlines and expose why they are misogynistic or sexist. 
-            #     Your analysis should be sharp, witty, and clearly highlight the underlying sexism or misogyny in each headline. 
-            #     Use your creativity to reformulate these headlines in a way that emphasizes their sexist nature while entertaining and engaging your audience.
-            #     Avoid using double quotes (\") in your responses to prevent possible errors with the JSON format.
-            # """,
-            # "prompt_content": """
-            #     Take the following headline and transform it into a sarcastic, hilarious, and deeply ironic statement that exposes the blatant sexism or misogyny behind it. 
-            #     Your response should be sharp and witty, providing an insightful analysis that is both engaging and entertaining for a female audience. 
-            #     Aim to create a headline that not only points out the sexist nature but does so in a way that is irresistible and thought-provoking. 
-            #     Provide a brief reasoning on why the headline is sexist or misogynistic to use in your reformulation.
-            #     Avoid using double quotes (\") in your responses to prevent possible errors with the JSON format.
-            #     At the end, create a JSON object with the following keys:
-            #     - refactored: new headline
-            #     - refactored_es: value of the new_headline key translated into Spanish
-            #     Headline: {headline}
-            #     Brief summary of the news: {context}
-            # """
-
             "system": """
                 You are a highly intelligent and advanced language model designed to classify news headlines. 
                 Your goal is to evaluate and categorize news headlines as 'misogynistic/sexist' or 'neutral' from a radical feminist perspective, considering both the context and the implications of the language used. 
@@ -88,6 +50,7 @@ class HeadlineAnalyzer:
 
                 Headline: "{headline}"
             """,
+
             "system_content": """
                 You are an exceptional content creator known for crafting viral content in a {tone} tone, always from a radical feminist perspective and tailored for a female audience.
                 Your task is to take headlines and expose why they are misogynistic or sexist.
@@ -114,7 +77,35 @@ class HeadlineAnalyzer:
 
                 Headline: "{headline}"
                 Brief summary of the news: "{context}"
+            """,
+
+            "system_adversary": """
+                You are an advanced language model designed to validate the categorization of news headlines. 
+                Your goal is to analyze and review the classification made by another language model, determining whether the categorization of 'misogynistic/sexist' or 'neutral' is correct or if it is a false positive. 
+                You are trained to understand the nuances of language and apply a critical and objective approach, evaluating the validity of the justifications provided by the first model. 
+                Your approach should be based on radical feminist theories but also on a rigorous assessment of linguistic and contextual accuracy.
+                Your task is to provide detailed feedback and a final judgment on the original classification.
+                Respond concisely and only in the form of a JSON object.
+            """,
+            "prompt_adversary": """
+                You are an advanced language model tasked with validating the following categorization made by another model:
+
+                - Original headline: "{headline}"
+                - Initial classification: {is_misogynistic}
+                - Reason provided: {reason}
+
+                Step 1: Evaluate whether the initial classification is correct based on a radical feminist perspective.
+                Step 2: Analyze if the reason provided for the classification is valid and coherent.
+                Step 3: Determine if the reformulation (if any) is appropriate and improves the neutrality of the language from a radical feminist perspective.
+                Step 4: Conclude whether the initial classification is correct, incorrect, or if it is a false positive.
+
+                Respond only with a JSON object in the following keys:
+                - is_correct: boolean (indicates if the initial classification is correct).
+                - reason: concise sentence explanation of your evaluation (in Spanish if is possible).
+
+                Context news: {context}.
             """
+
         }
 
         self.default_empty_object = {
@@ -195,3 +186,27 @@ class HeadlineAnalyzer:
         except Exception as e:
             print("Parsing json", e)
             return self.default_empty_object
+        
+    def validate(self, headline: str, is_misogynistic: bool, reason: str, context: str):
+        chat_history = ChatMessageHistory()
+        
+        #prompt_system = PromptTemplate.from_template(self.prompts["system_adversary"])
+        prompt_system = self.prompts["system_adversary"]
+        prompt_template = ChatPromptTemplate.from_messages([
+            ("system", prompt_system),
+            MessagesPlaceholder(variable_name="messages"),
+        ])
+
+        chain = prompt_template | self.chat
+
+        prompt_content = PromptTemplate.from_template(self.prompts["prompt_adversary"])
+        chat_history.add_user_message(prompt_content.format(headline=headline, is_misogynistic=is_misogynistic, reason=reason, context=context))
+        response_content = chain.invoke({"messages": chat_history.messages})
+        chat_history.add_ai_message(response_content)
+
+        try:
+            result = self.extract_json(response_content)
+            return result
+        except Exception as e:
+            print("Parsing json", e)
+            return None

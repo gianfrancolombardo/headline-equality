@@ -2,3 +2,4 @@
 **/__pycache__/**
 note.md
 config.yaml
+public/.streamlit/secrets.toml

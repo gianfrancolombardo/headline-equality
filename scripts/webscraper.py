@@ -29,7 +29,7 @@ class WebScraper:
                     if not href.startswith(('http://', 'https://')):
                         if not href.startswith('/'):
                             href = '/' + href
-                        print(f"Relative URL found: {base_url.rstrip('/')} - {href}")
+                        #print(f"Relative URL found: {base_url.rstrip('/')} - {href}")
                         href = base_url.rstrip('/') + href
                     links.append({
                         'text': a.text,

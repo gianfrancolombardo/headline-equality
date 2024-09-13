@@ -14,6 +14,24 @@ from scripts.headline_analyzer import HeadlineAnalyzer
 from scripts.headline_manager import HeadlineManager
 from scripts.webscraper import WebScraper
 
+
+def fetch_news(db):
+    """ Get all news with pagination """
+    all_data = []
+    limit = 1000
+    offset = 0
+
+    while True:
+        response = db.table('news').select('*').range(offset, offset + limit - 1).execute()
+        
+        data_news = response.data
+        all_data.extend(data_news)
+
+        if len(data_news) < limit:
+            break
+        offset += limit
+    return all_data
+
 def main():
     st.set_page_config(page_title="Headline Equality Backoffice", page_icon=":newspaper:")
 
@@ -22,10 +40,10 @@ def main():
 
     db = st.session_state.db.client
 
-    data_news = db.table('news').select('*').execute()
+    data_news = fetch_news(db)
 
-    if len(data_news.data) > 0:
-        data_news_df = pd.DataFrame(data_news.data)
+    if len(data_news) > 0:
+        data_news_df = pd.DataFrame(data_news)
 
         total_news = len(data_news_df)
         total_news_misogynistic = data_news_df[data_news_df['is_misogynistic'] == True].shape[0]
