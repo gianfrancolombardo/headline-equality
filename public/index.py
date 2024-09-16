@@ -6,17 +6,33 @@ import sys
 sys.path.append('../')
 sys.path.append('../scripts')
 
-from Home import fetch_news
+
 from scripts.headline_manager import HeadlineManager, Tables
 from scripts.helpers.supabase_db import SupabaseDB
-
 
 def margin_top(num):
     for _ in range(num):
         st.write("") 
 
+def fetch_news():
+    """ Get all news with pagination """
+    all_data = []
+    limit = 1000
+    offset = 0
+
+    while True:
+        response = db.table('news').select('*').range(offset, offset + limit - 1).execute()
+        
+        data_news = response.data
+        all_data.extend(data_news)
+
+        if len(data_news) < limit:
+            break
+        offset += limit
+    return all_data
+
 def fetch_metric():
-    data_news = fetch_news(db)
+    data_news = fetch_news()
     data_news_df = pd.DataFrame(data_news)
 
     total_news = len(data_news_df)
