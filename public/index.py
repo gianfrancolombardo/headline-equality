@@ -46,6 +46,7 @@ def fetch_validated():
         .select('*')
         .eq('is_misogynistic', True)
         .is_('validated', True)
+        #.or_('validated.is.null,validated.eq.true')
         .order("id", desc=True)
         .execute()
     ).data
@@ -56,8 +57,11 @@ def main():
 
     metrics = fetch_metric()
 
-    st.title("📰 Titulares sin machismo")
-    st.write("Análisis de titulares con IA para detectar sesgos machistas y misóginos")
+    st.set_page_config(page_title="Titulares machistas", page_icon=":newspaper:")
+
+    st.title("📰 Titulares machistas")
+    # st.write("Análisis de titulares con IA para detectar sesgos machistas y misóginos")
+    st.write("Agente semi-autonomo de análisis de titulares con IA para detectar sesgos machistas y misóginos")
 
     margin_top(3)
     st.subheader("📊 Metricas")
@@ -101,6 +105,7 @@ def main():
             <p style="font-size: 16px; margin-top: 15px;">
                 <strong>🧠</strong> {news['reason']}
             </p>
+            {"<p style='position: absolute; bottom: 15px; right: 25px;'><strong>⏳ Pendiente de validación</strong></p>" if not news['validated'] else ""}
         </div>
         """
         st.markdown(card_content, unsafe_allow_html=True)
