@@ -1,0 +1,12 @@
+requests
+langchain == 0.1.20
+langchain-openai == 0.1.7
+lunary
+
+streamlit
+
+supabase
+
+tweepy
+bs4
+tldextract
