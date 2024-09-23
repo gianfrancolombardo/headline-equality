@@ -45,8 +45,9 @@ def fetch_validated():
         db.table(Tables.NEWS)
         .select('*')
         .eq('is_misogynistic', True)
-        .is_('validated', True)
-        #.or_('validated.is.null,validated.eq.true')
+        .or_(
+            'validated.eq.true,and(validated.is.null,validated_auto.eq.true)'
+        )
         .order("id", desc=True)
         .execute()
     ).data
@@ -105,7 +106,7 @@ def main():
             <p style="font-size: 16px; margin-top: 15px;">
                 <strong>🧠</strong> {news['reason']}
             </p>
-            {"<p style='position: absolute; bottom: 15px; right: 25px;'><strong>⏳ Pendiente de validación</strong></p>" if not news['validated'] else ""}
+            {"<p style='position: absolute; bottom: 15px; right: 25px;'><strong>⏳ Pendiente de validación</strong></p>" if news['validated'] is None else ""}
         </div>
         """
         st.markdown(card_content, unsafe_allow_html=True)
