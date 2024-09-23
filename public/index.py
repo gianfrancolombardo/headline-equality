@@ -58,9 +58,9 @@ def main():
 
     metrics = fetch_metric()
 
-    st.set_page_config(page_title="Titulares machistas", page_icon=":newspaper:")
+    st.set_page_config(page_title="Titulares Libres", page_icon=":newspaper:")
 
-    st.title("📰 Titulares machistas")
+    st.title("📰 Titulares Libres")
     # st.write("Análisis de titulares con IA para detectar sesgos machistas y misóginos")
     st.write("Agente semi-autonomo de análisis de titulares con IA para detectar sesgos machistas y misóginos")
 
@@ -72,15 +72,12 @@ def main():
     with col2:
         st.metric(label="Tituales machistas", value=metrics[1])
     with col3:
-        if metrics[0] > 0:
-            percentage = (metrics[1] / metrics[0]) * 100
-        else:
-            percentage = 0
+        percentage = (metrics[1] / metrics[0]) * 100 if metrics[0] > 0 else 0
         st.metric(label="% Titulares machistas", value=f"{percentage:.2f}%")
 
 
     margin_top(3)
-    st.subheader("🕒 Ultimos titulares")
+    st.subheader("🕒 Ultimos titulares machistas")
 
     for news in data_news:
         # Formatear created_at
@@ -96,13 +93,15 @@ def main():
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
             color: #E1E1E6;
         ">
-            <h4 style="color: #E1E1E6; margin-bottom: 5px;">{news['headline']}</h4>
+            <span style="color: #8E8E93; font-size: 12px;">Original</span>
+            <h4 style="color: #E1E1E6; margin-bottom: 5px; padding-top: 4px">{news['headline']}</h4>
             <p style="color: #8E8E93; font-size: 13px; margin: 0;">
                 {formatted_date} | <strong>📰</strong> 
                 <a href="{news['url']}" target="_blank" style="color: #5AC8FA; text-decoration: none;">{news['source']}</a>
             </p>
-            <hr style="border: 1px solid #444; margin: 15px 0;">
-            <h5 style="margin-top: 25px;">🟢 {news['refactored_es']}</h5>
+            <hr style="border: 1px solid #444; margin: 20px 0;">
+            <span style="color: #8E8E93; font-size: 12px;">Reformulado</span>
+            <h5 style="padding-top: 4px;">🟢 {news['refactored_es']}</h5>
             <p style="font-size: 16px; margin-top: 15px;">
                 <strong>🧠</strong> {news['reason']}
             </p>
