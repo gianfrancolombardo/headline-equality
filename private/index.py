@@ -4,8 +4,10 @@ import pandas as pd
 # Temporal
 pd.set_option('future.no_silent_downcasting', True)
 
+import os
 import sys
-sys.path.append('./scripts')
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'scripts')))
 
 from scripts.helpers.config import Config
 from scripts.helpers.supabase_db import SupabaseDB
@@ -102,7 +104,7 @@ def main():
 def init():
     if 'config' not in st.session_state:
         st.session_state.config = Config(
-            './config.yaml')
+            '../config.yaml')
     if 'db' not in st.session_state:
         st.session_state.db = SupabaseDB(
             st.session_state.config.get('supabase_url'), 

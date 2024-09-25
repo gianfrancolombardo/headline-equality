@@ -1,7 +1,7 @@
 import datetime
 import streamlit as st
 
-from Home import init
+from private.index import init
 
 from scripts.headline_analyzer import HeadlineAnalyzer
 from scripts.headline_manager import Tables

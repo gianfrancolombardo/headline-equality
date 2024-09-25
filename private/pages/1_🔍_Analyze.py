@@ -1,12 +1,7 @@
-import time
 import streamlit as st
-
-from Home import init
 
 from scripts.headline_analyzer import HeadlineAnalyzer
 from scripts.headline_main import HeadlineMain
-from scripts.webscraper import WebScraper
-
 
 if 'manager' in st.session_state:
     manager = st.session_state.manager

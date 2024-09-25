@@ -1,7 +1,6 @@
-from datetime import datetime
 import streamlit as st
 
-from Home import init
+from private.index import init
 
 from scripts.headline_analyzer import HeadlineAnalyzer
 from scripts.headline_manager import Tables
@@ -74,19 +73,21 @@ for news in data_news.data[:2]:
     
         st.subheader(news['headline'])
 
+        st.write(f"🆔 {news['id']}  |  🔗 [{news['source']}]({news['url']})  |  📅 {news['created_at'].split('T')[0]}")
+        
         col1, col2 = st.columns(2)
         with col1:
             st.write(f"**Refactored**  \n{news['refactored_es']}")
         with col2:
-            st.write(f"**Refactored EN**  \n{news['refactored']}")
-
-        col3, col4 = st.columns(2)
-        with col3:
             st.write(f"**Reason**  \n{news['reason']}")
-        with col4:
-            st.write(f"🆔 {news['id']}")
-            st.write(f"📢 [{news['source']}]({news['url']})")
-            st.write(f"📅 {news['created_at'].split('T')[0]}")
+
+        # col3, col4, col11 = st.columns(3)
+        # with col3:
+        #     st.write(f"🆔 {news['id']}")
+        # with col4:
+        #     st.write(f"📢 [{news['source']}]({news['url']})")
+        # with col11:
+        #     st.write(f"📅 {news['created_at'].split('T')[0]}")
 
         col9, col10 = st.columns(2)
         with col9:
