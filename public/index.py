@@ -63,6 +63,23 @@ def main():
     st.title("📰 Titulares Libres")
     # st.write("Análisis de titulares con IA para detectar sesgos machistas y misóginos")
     st.write("Agente semi-autonomo de análisis de titulares con IA para detectar sesgos machistas y misóginos")
+    st.markdown(
+        """
+        <style>
+            a {color: #A1A1B3 !important; text-decoration: none; margin-left: 5px; margin-right: 5px;} 
+            a:hover {color: #D1D1E0;}
+        </style>
+        <p style="font-size: 12px; color: #8E8E93;">
+            Hecho con ❤️ por <a href="https://glombardo.xyz" target="_blank">Glombardo</a> | 
+            <a href="https://github.com/gianfrancolombardo/headline-equality" target="_blank">
+                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" width="16px" style="vertical-align:middle; margin-right: 5px; filter: invert(75%) sepia(10%) saturate(600%) hue-rotate(180deg) brightness(95%) contrast(90%);">Repo del proyecto
+            </a>
+        </p>
+        """, 
+        unsafe_allow_html=True
+    )
+
+
 
     margin_top(3)
     st.subheader("📊 Metricas")

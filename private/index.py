@@ -64,7 +64,7 @@ def main():
         # Gruped by source
         grouped_by_source = data_news_df.groupby('source').agg(
             total_news=('is_misogynistic', 'size'),
-            misogynistic_news=('is_misogynistic', 'sum')
+            misogynistic_news=('validated', 'sum')
         )
         grouped_by_source['percentage_misogynistic'] = (grouped_by_source['misogynistic_news'] / grouped_by_source['total_news']) * 100
         grouped_by_source = grouped_by_source.sort_values(by='percentage_misogynistic', ascending=True)
